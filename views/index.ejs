@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style> 
+
+    .books-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      gap: 2rem;
+    }
+
+    .book {
+      flex: 1;
+      width: 800px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 5px;
+      text-align: left;
+    }
+        
+    .image {
+        float: left;
+        height: 175px;
+        width: 130px;
+        background-color: lightgrey;
+    }
+
+    </style>
+</head>
+
+<body>
+
+    <div class = "books-container">
+    <% for (var i = 0; i < books.length; i++) {  %>
+            <div class = "book"> 
+                <img class = "image" src= "<%=bookcovers[i]%>" alt= "book cover for book"> 
+                <p><%=books[i].title%></p>
+                <p><span>Date read: <%=books[i].date_read%> |  </span> 
+                   <span>How strongly I recommend it: <%=books[i].rating%></span></p>
+                <p><%=books[i].notes%></p>
+            </div>
+    <% } %>
+    </div>
+</body>
+
+</html>

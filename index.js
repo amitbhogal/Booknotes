@@ -7,7 +7,7 @@ import pg from "pg" // connect to database
 //Create an express app and set the port number.
 const app = express();
 const port = 3000;
-const API_URL = "https://covers.openlibrary.org/b"; // external API to connect with 
+const API_URL = "https://covers.openlibrary.org/b/isbn"; // external API to connect with 
 
 // create connection to database and connect
 const db = new pg.Client({
@@ -39,11 +39,11 @@ function convertUTCToLocalTime(dateString){
   return formattedTime;
 }
 
- var books = []; // array of book titles
- var bookcovers = [];
-
 // get request from client to show home page for website
 app.get("/", async (req, res) => {
+
+    var books = []; // array of book titles
+    var bookcovers = [];
 
     const result = await db.query(`SELECT book.id, isbn, title, date_read, rating, notes 
                                    FROM book 
@@ -55,30 +55,38 @@ app.get("/", async (req, res) => {
   
     console.log(result.rows);
 
-    try {
     
-        for (var i = 0; i < books.length; i++) {
-            isbn = books[i].isbn;
+    for (var i = 0; i < books.length; i++) 
+    {
+        // Convert to date into a readable format
+        books[i].date_read = convertUTCToLocalTime(books[i].date_read);
 
-            console.log(isbn);
-            
-            // const image = await axios.get(`${API_URL}/${isbn}-M.jpg`);
+        // get isbn
+        var isbn = books[i].isbn;
+        
+        console.log(`${API_URL}/${isbn}-M.jpeg`);
+        
+        try {
+            // Check if it is a valid path to image - a valid path won't be caught as an error
+            var image = await axios.get(`${API_URL}/${isbn}-M.jpg`);
 
-            // console.log(image);
-
-            // bookcovers.push(image);
-        } 
-
-        res.render("index.ejs", {
-            books: books, bookcovers: bookcovers
-          });
-
-        } catch (error) {
-  
-          // Test this server error
-          res.render("index.ejs", { error: "Could not find cover for the book"});
+            if (image) {
+                bookcovers.push(`${API_URL}/${isbn}-M.jpg`);
+            } else { 
+                // could not get bookcover because of invalid isbn or another reason
+                bookcovers.push("unavailable");
+            }
         }
+        catch (error) {
+            // If could not find book cover image for any other reason
+            bookcovers.push("unavailable");
+        }
+        
+    } 
 
+    console.log({ books: books, bookcovers: bookcovers});
+
+    res.render("index.ejs", { books: books, bookcovers: bookcovers});
 
   });
 
