@@ -14,15 +14,19 @@
       align-items: center;
       height: 100vh;
       gap: 2rem;
+
+      margin-top: 175px;
     }
 
     .book {
       flex: 1;
       width: 800px;
       padding: 20px;
+
       background-color: white;
       border-radius: 5px;
       text-align: left;
+
     }
         
     .image {
@@ -32,21 +36,50 @@
         background-color: lightgrey;
     }
 
+    h1 {
+      font-size: 5rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+    }
+
+    p {
+      margin-bottom: 25px;
+    }
+
+    .book_detail {
+      padding-left: 25px;
+      margin-left: 25px;
+    }
     </style>
 </head>
 
 <body>
 
+
     <div class = "books-container">
+
+    <div class = "book">
+        <h1> Amit Bhogal </h1>
+        <h2> Books I’ve read </h2>
+        <p> Some notes for each book read. Use the ISBN number to find it from your local library or anywhere else. This page will constantly update as I read more, so bookmark it if you want to check back in a few months.</p>
+        <p> Sorted with my top recommendations up top. Sort by <a href="./">title</a>, <a href="./">newest</a>, or <a href="./">best</a>. </p>
+        <p> And please read this FAQ page about these notes, if you have any questions. You can also email me.</p>
+        <hr>
+    </div>
+
+
     <% for (var i = 0; i < books.length; i++) {  %>
             <div class = "book"> 
                 <img class = "image" src= "<%=bookcovers[i]%>" alt= "book cover for book"> 
-                <p><%=books[i].title%></p>
-                <p><span>Date read: <%=books[i].date_read%> |  </span> 
+                <p class = "book_detail"><%=books[i].title%></p>
+                <p class = "book_detail"><span>Date read: <%=books[i].date_read%> |  </span> 
                    <span>How strongly I recommend it: <%=books[i].rating%></span></p>
-                <p><%=books[i].notes%></p>
+                <p class = "book_detail"><%=books[i].notes%></p>
             </div>
     <% } %>
+    
     </div>
 </body>
 
