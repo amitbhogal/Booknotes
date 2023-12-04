@@ -1,0 +1,26 @@
+
+.image {
+    float: left;
+    height: 175px;
+    width: 130px;
+    background-color: lightgrey;
+
+    margin-right: 50px;
+}
+
+h1 {
+  font-size: 5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+p {
+  margin-bottom: 25px;
+}
+
+.book_detail {
+  padding-left: 25px;
+  margin-left: 25px;
+}
