@@ -114,7 +114,7 @@ app.get("/edit/:id", async (req, res) => {
   book.date_read = convertToDate(book.date_read);
   // console.log(convertToDate(book.date_read));
   
-  if (!book) return  res.render("modify.ejs", { error: "Book not found"});
+  if (!book) { return res.render("error.ejs", { message: "Error finding book note that needs updating."});}
 
   res.render("modify.ejs", {heading: "Update Booknote", submit: "Update", book: book});
 
@@ -125,8 +125,8 @@ app.post("/booknotes", (req, res) => {
   console.log("here");
 });
 
-// Edit a book note
-app.post("/booknotes/edit/:id", async (req, res) => {
+// Update the book note
+app.post("/booknotes/:id", async (req, res) => {
 
   var book_id = parseInt(req.params.id);
 
@@ -140,7 +140,7 @@ app.post("/booknotes/edit/:id", async (req, res) => {
   var book = result.rows[0];
 
   // Error handling - could not find that book
-  if (!book) alert("Unable to find the book that needs an update.");
+  if (!book) {return res.render("error.ejs", { message: "Error finding booknote that needs updating."});}
   res.redirect("/");
 
   // See what was submitted in the form from the client side
@@ -148,24 +148,25 @@ app.post("/booknotes/edit/:id", async (req, res) => {
   if (req.body.rating) book.rating = req.body.rating;
   if (req.body.date_read) book.date_read = req.body.date_read;
 
-  console.log(book.notes);
-  console.log(book.rating);
-  console.log(book.date_read);
+  // console.log(book.id);
+  // console.log(book.notes);
+  // console.log(book.rating);
+  // console.log(book.date_read);
 
-  const book_update = await db.query(`UPDATE book_review (notes, rating, date_read)
-                                        VALUES ($1, $2, $3)
-                                        WHERE book.id = ($4)`, [book.notes, book.rating, book.date_read, book_id]);
+  const book_update = await db.query(`UPDATE book_review 
+                                      SET notes = ($1), rating = ($2), date_read = ($3) 
+                                      WHERE book_review.id = ($4)`, [book.notes, book.rating, book.date_read, book_id]);
 
   var book_update_status = book_update.rows[0];
 
  // Error handling - could not update that book
-  if (!book_update_status) alert("Unable to update that book note.");
+  if (!book_update_status) { return res.render("error.ejs", { message: "Error updating book note."});}
   res.redirect("/");
 });
 
 
 // Delete a post
-app.get("/booknotes/delete/:id", async (req, res) => {
+app.get("/delete/:id", async (req, res) => {
     
     var book_id = parseInt(req.params.id);
 
@@ -175,8 +176,8 @@ app.get("/booknotes/delete/:id", async (req, res) => {
                                           WHERE book.id = book_review.id and book.id = ($1)`, [book_id]);
 
   // Error handling - could not delete that book
-  if (!book_update_status) alert("Unable to delete that book note.");
-    res.redirect("/");
+  if (!book_update_status) {return res.render("error.ejs", { message: "Error deleting book note."});}
+  res.redirect("/");
 });
 
 // Listen on your predefined port and start the server.
