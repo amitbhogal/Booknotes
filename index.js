@@ -3,11 +3,15 @@ import express from "express"; // setup server
 import axios from "axios"; // connect to external API
 import bodyParser from "body-parser"; // parse from forms from client
 import pg from "pg" // connect to database
+import methodOverride from "method-override";
 
 //Create an express app and set the port number.
 const app = express();
 const port = 3000;
 const API_URL = "https://covers.openlibrary.org/b/isbn"; // external API to connect with 
+
+// So that we can send PATCH/PUT/DELETE requests from client sided
+app.use(methodOverride('_method'));
 
 // create connection to database and connect
 const db = new pg.Client({
@@ -92,8 +96,12 @@ app.get("/", async (req, res) => {
   });
 
 
-// GET a specific book by id
-app.get("/booknotes/:id", async (req, res) => {
+app.get("/new", (req, res) => {
+    res.render("modify.ejs", { heading: "New Booknote", submit: "Create" });
+  });
+
+// GET a specific book by id for editing
+app.get("/edit/:id", async (req, res) => {
 
   const result = await db.query(`SELECT book.id, isbn, title, date_read, rating, notes 
                                   FROM book
@@ -106,54 +114,70 @@ app.get("/booknotes/:id", async (req, res) => {
   book.date_read = convertToDate(book.date_read);
   // console.log(convertToDate(book.date_read));
   
-  if (!book) return  res.render("edit.ejs", { error: "Book not found"});
+  if (!book) return  res.render("modify.ejs", { error: "Book not found"});
 
-  res.render("edit.ejs", {book: book});
+  res.render("modify.ejs", {heading: "Update Booknote", submit: "Update", book: book});
 
 });
 
 // POST a new book note
-app.post("/booknote", (req, res) => {
-  const newId = lastId += 1;
-  const post = {
-    id: newId,
-    title: req.body.title,
-    content: req.body.content,
-    author: req.body.author,
-    date: new Date(),
-  };
-  lastId = newId;
-  posts.push(post);
-  res.status(201).json(post);
+app.post("/booknotes", (req, res) => {
+  console.log("here");
 });
 
-// PATCH a post when you just want to update one parameter
-// app.patch("/booknotes/:id", (req, res) => {
-//   const post = posts.find((p) => p.id === parseInt(req.params.id));
-//   if (!post) return res.status(404).json({ message: "Post not found" });
+// Edit a book note
+app.post("/booknotes/edit/:id", async (req, res) => {
 
-//   if (req.body.title) post.title = req.body.title;
-//   if (req.body.content) post.content = req.body.content;
-//   if (req.body.author) post.author = req.body.author;
+  var book_id = parseInt(req.params.id);
 
-//   res.json(post);
-// });
+  const result = await db.query(`SELECT book.id, isbn, title, date_read, rating, notes 
+                                  FROM book
+                                  JOIN book_review 
+                                  ON book.id = book_review.id 
+                                  WHERE book.id = ($1)
+                                  ORDER BY rating ASC`, [book_id]);
 
-// DELETE a specific post by providing the post id
-// app.delete("/posts/:id", (req, res) => {
-//   const index = posts.findIndex((p) => p.id === parseInt(req.params.id));
-//   if (index === -1) return res.status(404).json({ message: "Post not found" });
+  var book = result.rows[0];
 
-//   posts.splice(index, 1);
-//   res.json({ message: "Post deleted" });
-// });
-  
-app.post("/submit", async (req, res) => {
+  // Error handling - could not find that book
+  if (!book) alert("Unable to find the book that needs an update.");
+  res.redirect("/");
 
-    // console.log(req.body.requested_display_order);
-    var requested_display_order = req.body.requested_display_order; 
+  // See what was submitted in the form from the client side
+  if (req.body.notes) book.notes = req.body.notes;
+  if (req.body.rating) book.rating = req.body.rating;
+  if (req.body.date_read) book.date_read = req.body.date_read;
 
-  });
+  console.log(book.notes);
+  console.log(book.rating);
+  console.log(book.date_read);
+
+  const book_update = await db.query(`UPDATE book_review (notes, rating, date_read)
+                                        VALUES ($1, $2, $3)
+                                        WHERE book.id = ($4)`, [book.notes, book.rating, book.date_read, book_id]);
+
+  var book_update_status = book_update.rows[0];
+
+ // Error handling - could not update that book
+  if (!book_update_status) alert("Unable to update that book note.");
+  res.redirect("/");
+});
+
+
+// Delete a post
+app.get("/booknotes/delete/:id", async (req, res) => {
+    
+    var book_id = parseInt(req.params.id);
+
+    const book_delete = await db.query(`DELETE book, book_review 
+                                          FROM book 
+                                          INNER JOIN book_review  
+                                          WHERE book.id = book_review.id and book.id = ($1)`, [book_id]);
+
+  // Error handling - could not delete that book
+  if (!book_update_status) alert("Unable to delete that book note.");
+    res.redirect("/");
+});
 
 // Listen on your predefined port and start the server.
 app.listen(port, () => {

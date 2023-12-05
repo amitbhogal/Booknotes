@@ -22,7 +22,7 @@
 
      <div class="align-items-center g-1 pt-2 pb-5 mb-5 mt-1">
 
-        <form id="editForm" method="patch" action="/booknotes/<%=book.id%>">
+        <form name = "editForm" id= "editForm" method="POST" action="/booknotes/<%=book.id%>">
             
 
             <div class="mb-3">
@@ -54,7 +54,6 @@
             <div class="mb-3"> 
                 <button class="full-width" type="submit">Submit</button>
             </div>
-            <!-- <div> <button type="submit">Submit</button></div> -->
         
         </form>
 
