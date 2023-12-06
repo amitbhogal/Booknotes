@@ -97,7 +97,7 @@ app.get("/", async (req, res) => {
 
 
 app.get("/new", (req, res) => {
-    res.render("modify.ejs", { heading: "New Booknote", submit: "Create" });
+  res.render("modify.ejs", {heading: "New Booknote", submit: "Add"});
   });
 
 // GET a specific book by id for editing
@@ -122,7 +122,7 @@ app.get("/edit/:id", async (req, res) => {
 
 // POST a new book note
 app.post("/booknotes", (req, res) => {
-  console.log("here");
+
 });
 
 // Update the book note

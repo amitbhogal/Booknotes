@@ -18,7 +18,7 @@
 
     <% if (locals.book) { %>
 
-     <h1>Book: <span style="font-style: italic;"> '<%= book.title%>' </span></h1>
+     <h1> <%= heading %> for: <span style="font-style: italic;"> '<%= book.title%>' </span></h1>
 
      <div class="align-items-center g-1 pt-2 pb-5 mb-5 mt-1">
 
@@ -47,18 +47,63 @@
             </div>
             
             <div class="mb-3">
-                <label for="start">Date Read:</label>
+                <label for="date_read">Date Read:</label>
                 <input name="date_read" id="date_read" class = "edit-item" type="date" value="<%=book.date_read%>" min="1900-01-01" max="<%= (new Date()).toISOString().split('T')[0] %>" />
             </div>
 
             <div class="mb-3"> 
-                <button class="full-width" type="submit">Submit</button>
+                <button class="full-width" type="submit"><%= submit %></button>
             </div>
         
         </form>
 
     </div>
-      <% } %>
+      <% } else { %>
+
+        <h1> <%= heading %></h1>
+
+        <div class="align-items-center g-1 pt-2 pb-5 mb-5 mt-1">
+   
+           <form name = "editForm" id= "editForm" method="POST" action="/booknotes/">
+               
+                <div class="mb-3"> 
+                    <label for="title" class="form-label">Title:</label>
+                    <input  name = "title" id = "title" type="text" class="form-label" placeholder="Book Title" required>
+                </div> 
+   
+               <div class="mb-3">
+                   <label for="rating" class="form-label" required>Rating:</label>
+                   <select name="rating" id="rating" >
+                    <option value="" hidden readonly selected>Select</option>
+                       <% for (var i = 1; i <= 10; i++) { %>
+                            <option value="<%= i %>"><%= i %></option>
+                       <% }  %>
+   
+                     </select>
+               </div>
+
+               <div class="mb-3"> 
+                <label for="isbn" class="form-label">ISBN:</label>
+                <input  name = "isbn" id = "isbn" type="text" class="form-label" placeholder="ISBN will be needed to display Book's Cover">
+            </div>
+               
+               <div class="mb-3">
+                   <label for="date_read">Date Read:</label>
+                   <input required name="date_read" id="date_read" class = "edit-item" type="date" min="1900-01-01" max="<%= (new Date()).toISOString().split('T')[0] %>" />
+               </div>
+
+               <div class="mb-3"> 
+                <label for="notes" class="form-label">Notes:</label>
+                <textarea name = "notes" id = "notes"  class = "form-control" rows="5" placeholder="Book Notes"></textarea>
+                </div>
+   
+               <div class="mb-3"> 
+                <button class="full-width" type="submit"><%= submit %></button>
+               </div>
+           
+           </form>
+   
+      <% } %>  
     
   </div>
 
