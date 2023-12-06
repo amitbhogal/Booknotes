@@ -141,7 +141,6 @@ app.post("/booknotes/:id", async (req, res) => {
 
   // Error handling - could not find that book
   if (!book) {return res.render("error.ejs", { message: "Error finding booknote that needs updating."});}
-  res.redirect("/");
 
   // See what was submitted in the form from the client side
   if (req.body.notes) book.notes = req.body.notes;
@@ -157,26 +156,21 @@ app.post("/booknotes/:id", async (req, res) => {
                                       SET notes = ($1), rating = ($2), date_read = ($3) 
                                       WHERE book_review.id = ($4)`, [book.notes, book.rating, book.date_read, book_id]);
 
-  var book_update_status = book_update.rows[0];
-
  // Error handling - could not update that book
-  if (!book_update_status) { return res.render("error.ejs", { message: "Error updating book note."});}
+  if (!book_update) { return res.render("error.ejs", { message: "Error updating book note."});}
   res.redirect("/");
 });
 
 
 // Delete a post
 app.get("/delete/:id", async (req, res) => {
-    
-    var book_id = parseInt(req.params.id);
 
-    const book_delete = await db.query(`DELETE book, book_review 
-                                          FROM book 
-                                          INNER JOIN book_review  
-                                          WHERE book.id = book_review.id and book.id = ($1)`, [book_id]);
+    const bookreview_delete = await db.query(`DELETE FROM book_review
+                                                WHERE book_review.id IN (SELECT id FROM book WHERE id = ($1));`, [parseInt(req.params.id)]);
+    const book_delete = await db.query(`DELETE FROM book WHERE book.id = ($1)`, [parseInt(req.params.id)]);
 
   // Error handling - could not delete that book
-  if (!book_update_status) {return res.render("error.ejs", { message: "Error deleting book note."});}
+  if (!book_delete || !bookreview_delete) {return res.render("error.ejs", { message: "Error deleting book note."});}
   res.redirect("/");
 });
 
