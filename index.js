@@ -111,20 +111,21 @@ app.get("/edit/:id", async (req, res) => {
                                   ORDER BY rating ASC`, [parseInt(req.params.id)]);
 
   var book = result.rows[0];
+  
+  if (!book) { return res.render("error.ejs", { message: "Error finding that book note."});}
+
   book.date_read = convertToDate(book.date_read);
   // console.log(convertToDate(book.date_read));
-  
-  if (!book) { return res.render("error.ejs", { message: "Error finding book note that needs updating."});}
 
   res.render("modify.ejs", {heading: "Edit Note", submit: "Update", book: book});
 
 });
 
-// POST a new book note
+// Add a new book note
 app.post("/booknotes", async (req, res) => {
 
-console.log(req.body.title);
-console.log(req.body.isbn);
+// console.log(req.body.title);
+// console.log(req.body.isbn);
 
 const book_insert = await db.query(`INSERT INTO book (title, isbn) VALUES ($1, $2) RETURNING id;`, [req.body.title, req.body.isbn]);
 
@@ -183,6 +184,10 @@ app.get("/delete/:id", async (req, res) => {
     const bookreview_delete = await db.query(`DELETE FROM book_review
                                                 WHERE book_review.id IN (SELECT id FROM book WHERE id = ($1));`, [parseInt(req.params.id)]);
     const book_delete = await db.query(`DELETE FROM book WHERE book.id = ($1)`, [parseInt(req.params.id)]);
+
+    console.log(bookreview_delete);
+    console.log(book_delete);
+    
 
   // Error handling - could not delete that book
   if (!book_delete || !bookreview_delete) {return res.render("error.ejs", { message: "Error deleting book note."});}
