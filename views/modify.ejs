@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Booknote</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <link rel="stylesheet" href="../public/styles/style.css">
+  <link rel="stylesheet" href="/styles/style.css">
 
   <style> 
 
-    </style>
+  </style>
 </head>
 
 <body>
@@ -18,12 +18,11 @@
 
     <% if (locals.book) { %>
 
-     <h1> <%= heading %> for: <span style="font-style: italic;"> '<%= book.title%>' </span></h1>
+     <h1> <%= heading %> for Book: <span style="font-style: italic;"> '<%= book.title%>' </span></h1>
 
      <div class="align-items-center g-1 pt-2 pb-5 mb-5 mt-1">
 
         <form name = "editForm" id= "editForm" method="POST" action="/booknotes/<%=book.id%>">
-            
 
             <div class="mb-3">
                 <label for="notes" class="form-label">Notes:</label>
@@ -68,7 +67,7 @@
                
                 <div class="mb-3"> 
                     <label for="title" class="form-label">Title:</label>
-                    <input  name = "title" id = "title" type="text" class="form-label" placeholder="Book Title" required>
+                    <input  name = "title" id = "title" type="text" class="form-label" placeholder="Book Title" size = "50" required>
                 </div> 
    
                <div class="mb-3">
@@ -84,7 +83,7 @@
 
                <div class="mb-3"> 
                 <label for="isbn" class="form-label">ISBN:</label>
-                <input  name = "isbn" id = "isbn" type="text" class="form-label" placeholder="ISBN will be needed to display Book's Cover">
+                <input  name = "isbn" id = "isbn" type="text" class="form-label" size = "50" placeholder="ISBN will be needed to display Book's Cover">
             </div>
                
                <div class="mb-3">
@@ -94,7 +93,7 @@
 
                <div class="mb-3"> 
                 <label for="notes" class="form-label">Notes:</label>
-                <textarea name = "notes" id = "notes"  class = "form-control" rows="5" placeholder="Book Notes"></textarea>
+                <textarea name = "notes" id = "notes"  class = "form-control" rows="5" placeholder="Add a note about what you felt and what you learnt while reading this book."></textarea>
                 </div>
    
                <div class="mb-3"> 

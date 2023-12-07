@@ -97,7 +97,7 @@ app.get("/", async (req, res) => {
 
 
 app.get("/new", (req, res) => {
-  res.render("modify.ejs", {heading: "New Booknote", submit: "Add"});
+  res.render("modify.ejs", {heading: "Add New Note", submit: "Add"});
   });
 
 // GET a specific book by id for editing
@@ -116,13 +116,28 @@ app.get("/edit/:id", async (req, res) => {
   
   if (!book) { return res.render("error.ejs", { message: "Error finding book note that needs updating."});}
 
-  res.render("modify.ejs", {heading: "Update Booknote", submit: "Update", book: book});
+  res.render("modify.ejs", {heading: "Edit Note", submit: "Update", book: book});
 
 });
 
 // POST a new book note
-app.post("/booknotes", (req, res) => {
+app.post("/booknotes", async (req, res) => {
 
+console.log(req.body.title);
+console.log(req.body.isbn);
+
+const book_insert = await db.query(`INSERT INTO book (title, isbn) VALUES ($1, $2) RETURNING id;`, [req.body.title, req.body.isbn]);
+
+// console.log(book_insert.rows[0].id);
+
+const book_review_insert = await db.query(`INSERT INTO book_review (id, date_read, rating, notes) 
+                                           VALUES ($1, $2, $3, $4)`, 
+                                          [book_insert.rows[0].id, req.body.date_read, parseInt(req.body.rating), req.body.notes]);
+     
+// Error handling - could not add that book
+if (!book_insert || !book_review_insert) {return res.render("error.ejs", {message: "Error adding new book note."});}
+
+res.redirect("/");
 });
 
 // Update the book note

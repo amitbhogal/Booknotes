@@ -8,19 +8,33 @@
     margin-right: 50px;
 }
 
-h1 {
+/* h1 {
   font-size: 5rem;
 }
 
 h2 {
   font-size: 2rem;
-}
+} */
 
-p {
+/* p {
   margin-bottom: 25px;
-}
+} */
 
 .book_detail {
   padding-left: 25px;
   margin-left: 25px;
 }
+
+::placeholder {
+  color: lightgray;
+}
+
+input[type="text"]::placeholder {
+  text-align: center;
+}
+
+textarea::placeholder {
+  text-align: left;
+}
+
+
