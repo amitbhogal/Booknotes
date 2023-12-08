@@ -14,7 +14,8 @@ CREATE TABLE book_review (
   notes TEXT
 );
 
-INSERT INTO book (title)
+-- Add some Data --
+INSERT INTO book (title, isbn)
 VALUES ('Fuzzy bee and friends.', '0312491506'), ('The very hungry caterpillar' , '0399227539');
 INSERT INTO book_review (id, date_read, rating, notes)
 VALUES (1, '2016-04-26', 6, 'A good cloth book for infants to see colors and touch and feel different textures.'), (2, '2018-02-21', 7, 'A good book to introduce basic words, colors and storytelling to infants.') ;

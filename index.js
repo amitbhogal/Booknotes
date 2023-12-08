@@ -18,7 +18,7 @@ const db = new pg.Client({
     user: "postgres",
     host: "localhost",
     database: "booknotes",
-    password: "Postgres731!",
+    password: "XXXXXX",
     port: 5432,
   });
   
@@ -48,6 +48,31 @@ function convertToDate(dateString){
 // get request from client to show home page for website
 app.get("/", async (req, res) => {
 
+  var orderBy = req.query.orderBy;
+  // console.log(orderBy);
+
+  // default order direction for database query
+  var orderDirection = "DESC";
+  
+  // If there was no query parameter passed, default book order is BY rating
+  if (!orderBy) 
+  {  
+    orderBy = "rating";
+  }
+  else {
+    // If there was a query parameter passed but it was not title, date_read or rating, set orderBy to rating
+    if (!["title", "date_read", "rating"].includes(orderBy)) 
+    { 
+      orderBy = "rating";
+    } 
+    // if order is by title, we want to show by alphabetical order from A to Z
+    else if (orderBy === "title") {
+      orderDirection = "ASC";
+    }
+  }
+
+    // console.log(orderBy);
+
     var books = []; // reset array of books
     var bookcovers = [];
 
@@ -55,13 +80,12 @@ app.get("/", async (req, res) => {
                                    FROM book 
                                    JOIN book_review 
                                    ON book.id = book_review.id 
-                                   ORDER BY rating ASC`);
+                                   ORDER BY ` + orderBy + " " + orderDirection);
 
     books = result.rows;
   
     // console.log(result.rows);
 
-    
     for (var i = 0; i < books.length; i++) 
     {
         // Convert to datetime to date
@@ -96,13 +120,9 @@ app.get("/", async (req, res) => {
   });
 
 // get request from client to show home page for website
-app.get("/sort", async (req, res) => {
-  const orderBy = req.query.orderBy;
+// app.get("/sort", async (req, res) => {
 
-  console.log("here");
-
-  console.log(orderBy);
-});
+// });
 
 app.get("/new", (req, res) => {
   res.render("modify.ejs", {heading: "Add New Note", submit: "Add"});
