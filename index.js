@@ -95,6 +95,14 @@ app.get("/", async (req, res) => {
 
   });
 
+// get request from client to show home page for website
+app.get("/sort", async (req, res) => {
+  const orderBy = req.query.orderBy;
+
+  console.log("here");
+
+  console.log(orderBy);
+});
 
 app.get("/new", (req, res) => {
   res.render("modify.ejs", {heading: "Add New Note", submit: "Add"});
